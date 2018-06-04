@@ -1,5 +1,64 @@
 Xamarin.Forms.GoogleMaps Release Notes
 ----
+# 3.0.0-beta3
+
+## Bug Fixes
+
+* #491 [Android/iOS]Causes NotSupportedException when using stream via URL
+
+# 3.0.0-beta2
+
+## New Features
+
+* PR#483 [Android]Update reference GooglePlayServices.Maps package to 60.1142.1
+
+# 3.0.0-beta1
+
+## New Features
+
+* #355 Support .NET Standard 2.0
+	* Now depends Xamarin.Forms 2.5.1.444934+
+	* [UWP]Now depends Windows 10 Fall Creators Update(build 16299)
+
+# 2.3.1-beta1
+
+## New Features
+
+* #406 [Android]Add UiSettings.MapToolbarEnabled property
+
+# 2.3.0
+
+## New Features
+
+* #29 [Android/iOS]Add OnMarkerCreating, OnMarkerCreated, OnMarkerDeleting and OnMarkerDeleted callback methods for custom renderer
+
+## Bug Fixes
+
+* #[Android]Fix Polygon, Polyline, Circle, Pin, GroundOverlays does not work
+* #373 [Android]Improve view initialization and uninitialization
+* #40 [iOS]Fix bundle xxx@1x.png, xxx@2x.png, xxx@3x.png does not work for marker icon.
+* #431 [iOS]Fix doesn't work with Xamarin.Google.iOS.Maps 2.4.0+
+* #367 [iOS]Fix MyLocationEnabled doesn't work 
+* #421 [iOS/Android/UWP]Fix InitialCameraUpdate parsing failed
+* #40 [iOS]Fix icon size is bigger than Android when load from bundle or stream
+
+# 2.2.1
+
+## Bug Fixes
+
+* #400 [iOS]Fix Map.MyLocationEnabled in page constructor doesn't work
+* #400 [iOS]Fix Direct assign 'MyLocationButtonEnabled' value / result = no show
+
+# 2.2.0
+
+## New Features
+
+* #195 [Android/iOS]Add CameraMoveStarted, CameraMoving, CameraIdled event
+
+## Bug Fixes
+
+* #371 [Android]UiSettings.ZoomControls enabled not processed in page constructor
+
 # 2.1.1
 
 ## New Features

@@ -34,7 +34,7 @@ namespace Xamarin.Forms.GoogleMaps.iOS
                 new PolylineLogic(),
                 new PolygonLogic(),
                 new CircleLogic(),
-                new PinLogic(),
+                new PinLogic(OnMarkerCreating, OnMarkerCreated, OnMarkerDeleting, OnMarkerDeleted),
                 new TileLayerLogic(),
                 new GroundOverlayLogic()
             };
@@ -54,17 +54,24 @@ namespace Xamarin.Forms.GoogleMaps.iOS
         {
             if (disposing)
             {
-                Map.OnSnapshot -= OnSnapshot;
-                _cameraLogic.Unregister();
-
-                foreach (var logic in _logics)
-                    logic.Unregister(NativeMap, Map);
+                if(Map!=null)
+                {
+                    Map.OnSnapshot -= OnSnapshot;
+                    foreach (var logic in _logics)
+                    {
+                        logic.Unregister(NativeMap, Map);
+                    }
+                }               
+                _cameraLogic.Unregister();              
 
                 var mkMapView = (MapView)Control;
-                mkMapView.CoordinateLongPressed -= CoordinateLongPressed;
-                mkMapView.CoordinateTapped -= CoordinateTapped;
-                mkMapView.CameraPositionChanged -= CameraPositionChanged;
-                mkMapView.DidTapMyLocationButton = null;
+                if(mkMapView!=null)
+                {
+                    mkMapView.CoordinateLongPressed -= CoordinateLongPressed;
+                    mkMapView.CoordinateTapped -= CoordinateTapped;
+                    mkMapView.CameraPositionChanged -= CameraPositionChanged;
+                    mkMapView.DidTapMyLocationButton = null;
+                }
             }
 
             base.Dispose(disposing);
@@ -124,15 +131,16 @@ namespace Xamarin.Forms.GoogleMaps.iOS
                 _cameraLogic.MoveCamera(mapModel.InitialCameraUpdate);
 
                 _uiSettingsLogic.Register(Map, NativeMap);
-                _uiSettingsLogic.Initialize();
                 UpdateMapType();
-                UpdateIsShowingUser();
-                UpdateHasScrollEnabled();
-                UpdateHasZoomEnabled();
-                UpdateHasRotationEnabled();
+                UpdateIsShowingUser(_uiSettingsLogic.MyLocationButtonEnabled);
+                UpdateHasScrollEnabled(_uiSettingsLogic.ScrollGesturesEnabled);
+                UpdateHasZoomEnabled(_uiSettingsLogic.ZoomGesturesEnabled);
+                UpdateHasRotationEnabled(_uiSettingsLogic.RotateGesturesEnabled);
                 UpdateIsTrafficEnabled();
                 UpdatePadding();
                 UpdateMapStyle();
+                UpdateMyLocationEnabled();
+                _uiSettingsLogic.Initialize();
 
                 foreach (var logic in _logics)
                 {
@@ -280,25 +288,25 @@ namespace Xamarin.Forms.GoogleMaps.iOS
             return Map.SendMyLocationClicked();
         }
 
-        void UpdateHasScrollEnabled()
+        private void UpdateHasScrollEnabled(bool? initialScrollGesturesEnabled = null)
         {
-            NativeMap.Settings.ScrollGestures = ((Map)Element).HasScrollEnabled;
+            NativeMap.Settings.ScrollGestures = initialScrollGesturesEnabled ?? ((Map)Element).HasScrollEnabled;
         }
 
-        void UpdateHasZoomEnabled()
+        private void UpdateHasZoomEnabled(bool? initialZoomGesturesEnabled = null)
         {
-            NativeMap.Settings.ZoomGestures = ((Map)Element).HasZoomEnabled;
+            NativeMap.Settings.ZoomGestures = initialZoomGesturesEnabled ?? ((Map)Element).HasZoomEnabled;
         }
 
-        void UpdateHasRotationEnabled()
+        private void UpdateHasRotationEnabled(bool? initialRotateGesturesEnabled = null)
         {
-            NativeMap.Settings.RotateGestures = ((Map)Element).HasRotationEnabled;
+            NativeMap.Settings.RotateGestures = initialRotateGesturesEnabled ?? ((Map)Element).HasRotationEnabled;
         }
 
-        void UpdateIsShowingUser()
+        private void UpdateIsShowingUser(bool? initialMyLocationButtonEnabled = null)
         {
             ((MapView)Control).MyLocationEnabled = ((Map)Element).IsShowingUser;
-            ((MapView)Control).Settings.MyLocationButton = ((Map)Element).IsShowingUser;
+            ((MapView)Control).Settings.MyLocationButton = initialMyLocationButtonEnabled ?? ((Map)Element).IsShowingUser;
         }
 
         void UpdateMyLocationEnabled()
@@ -359,5 +367,49 @@ namespace Xamarin.Forms.GoogleMaps.iOS
                 ((MapView)Control).MapStyle = mapStyle;
             }
         }
+
+        #region Overridable Members
+
+        /// <summary>
+        /// Call when before marker create.
+        /// You can override your custom renderer for customize marker.
+        /// </summary>
+        /// <param name="outerItem">the pin.</param>
+        /// <param name="innerItem">the marker options.</param>
+        protected virtual void OnMarkerCreating(Pin outerItem, Marker innerItem)
+        {
+        }
+
+        /// <summary>
+        /// Call when after marker create.
+        /// You can override your custom renderer for customize marker.
+        /// </summary>
+        /// <param name="outerItem">the pin.</param>
+        /// <param name="innerItem">thr marker.</param>
+        protected virtual void OnMarkerCreated(Pin outerItem, Marker innerItem)
+        {
+        }
+
+        /// <summary>
+        /// Call when before marker delete.
+        /// You can override your custom renderer for customize marker.
+        /// </summary>
+        /// <param name="outerItem">the pin.</param>
+        /// <param name="innerItem">thr marker.</param>
+        protected virtual void OnMarkerDeleting(Pin outerItem, Marker innerItem)
+        {
+        }
+
+        /// <summary>
+        /// Call when after marker delete.
+        /// You can override your custom renderer for customize marker.
+        /// </summary>
+        /// <param name="outerItem">the pin.</param>
+        /// <param name="innerItem">thr marker.</param>
+        protected virtual void OnMarkerDeleted(Pin outerItem, Marker innerItem)
+        {
+        }
+
+        #endregion    
     }
 }
