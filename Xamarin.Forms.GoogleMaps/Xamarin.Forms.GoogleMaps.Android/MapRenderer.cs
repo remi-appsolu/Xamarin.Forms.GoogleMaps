@@ -136,6 +136,7 @@ namespace Xamarin.Forms.GoogleMaps.Android
                 logic.ScaledDensity = _scaledDensity;
             }
 
+          
             OnMapReady(NativeMap, newMap);
         }
 
@@ -152,6 +153,8 @@ namespace Xamarin.Forms.GoogleMaps.Android
 
         private void OnMapReady(GoogleMap nativeMap, Map map)
         {
+            if (map == null || Map == null) return;
+
             if (nativeMap != null)
             {
                 _cameraLogic.Register(map, nativeMap);
